@@ -25,3 +25,14 @@ func TestCheckPasswordHash(t *testing.T) {
 		t.Fatal()
 	}
 }
+
+func TestGenKey(t *testing.T) {
+	key, err := genKey()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if key[0] == 0 && key[1] == 0 && key[2] == 0 {
+		t.Fatal()
+	}
+}
