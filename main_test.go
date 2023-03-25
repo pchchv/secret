@@ -1,5 +1,10 @@
 package main
 
+import (
+	"crypto/aes"
+	"testing"
+)
+
 const plaintext = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 	Phasellus non purus nec sem fringilla vestibulum. Phasellus ornare justo quis enim euismod,
 	vitae posuere augue malesuada. Duis nec lacus risus. Integer vulputate tincidunt diam,
@@ -69,6 +74,21 @@ func TestGenKey(t *testing.T) {
 	}
 
 	if key[0] == 0 && key[1] == 0 && key[2] == 0 {
+		t.Fatal()
+	}
+}
+
+func TestEncrypt(t *testing.T) {
+	ct, key, err := encrypt(plaintext)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(ct) < 2 {
+		t.Fatal()
+	}
+
+	if len([]byte(key)) < aes.BlockSize {
 		t.Fatal()
 	}
 }
