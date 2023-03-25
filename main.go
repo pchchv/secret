@@ -5,6 +5,7 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
+	"errors"
 	"io"
 
 	"golang.org/x/crypto/bcrypt"
@@ -62,6 +63,34 @@ func encrypt(text string) (encoded string, key []byte, err error) {
 
 	// return string encoded in base64
 	return base64.RawStdEncoding.EncodeToString(cipherText), key, err
+}
+
+func decrypt(key []byte, secure string) (decoded string, err error) {
+	// remove base64 encoding:
+	cipherText, err := base64.RawStdEncoding.DecodeString(secure)
+	if err != nil {
+		return
+	}
+
+	// create a new AES cipher with the key and encrypted message
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return
+	}
+
+	if len(cipherText) < aes.BlockSize {
+		err = errors.New("Ciphertext block size is too short!")
+		return
+	}
+
+	iv := cipherText[:aes.BlockSize]
+	cipherText = cipherText[aes.BlockSize:]
+
+	// decrypt the message
+	stream := cipher.NewCFBDecrypter(block, iv)
+	stream.XORKeyStream(cipherText, cipherText)
+
+	return string(cipherText), err
 }
 
 func main() {}
