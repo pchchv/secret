@@ -92,3 +92,19 @@ func TestEncrypt(t *testing.T) {
 		t.Fatal()
 	}
 }
+
+func TestDecrypt(t *testing.T) {
+	ct, key, err := encrypt(plaintext)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	text, err := decrypt(key, ct)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if text != plaintext {
+		t.Fatal()
+	}
+}
