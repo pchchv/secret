@@ -110,7 +110,8 @@ func decrypt(key []byte, secure string) (decoded string, err error) {
 	return string(cipherText), err
 }
 
-func encryptor(text string) (s Secret, err error) {
+func encryptor(text string) (pass string, err error) {
+	s := Secret{}
 	s.encryptedtext, s.key, err = encrypt(text)
 	if err != nil {
 		return
@@ -122,7 +123,7 @@ func encryptor(text string) (s Secret, err error) {
 		return
 	}
 
-	return
+	return saver(s), nil
 }
 
 func main() {}
