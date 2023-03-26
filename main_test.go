@@ -53,6 +53,21 @@ func TestPasswordHash(t *testing.T) {
 	}
 }
 
+func TestHashPassword(t *testing.T) {
+	password := "test123"
+
+	hashedPassword, err := hashPassword(password)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+
+	if err != nil {
+		t.Errorf("Password does not match hash: %v", err)
+	}
+}
+
 func TestCheckPasswordHash(t *testing.T) {
 	pass := "qewhy#fcu3!rt"
 
