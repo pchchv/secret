@@ -3,6 +3,8 @@ package main
 import (
 	"crypto/aes"
 	"testing"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 const plaintext = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -79,6 +81,21 @@ func TestCheckPasswordHash(t *testing.T) {
 
 	if !checkPasswordHash(pass, hash) {
 		t.Fatal()
+	}
+}
+
+func TestCheckHashPassword(t *testing.T) {
+	password := "test123"
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+
+	match := checkPasswordHash(password, string(hashedPassword))
+
+	if !match {
+		t.Error("Password does not match hash")
 	}
 }
 
