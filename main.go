@@ -110,4 +110,19 @@ func decrypt(key []byte, secure string) (decoded string, err error) {
 	return string(cipherText), err
 }
 
+func encryptor(text string) (s Secret, err error) {
+	s.encryptedtext, s.key, err = encrypt(text)
+	if err != nil {
+		return
+	}
+
+	s.password = genPassword()
+	s.hash, err = hashPassword(s.password)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func main() {}
