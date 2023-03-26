@@ -188,3 +188,41 @@ func TestDecrypt(t *testing.T) {
 		t.Fatal()
 	}
 }
+
+func TestDecrypt2(t *testing.T) {
+	encoded, key, err := encrypt(plaintext)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+
+	decoded, err := decrypt(key, encoded)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+
+	if decoded != plaintext {
+		t.Errorf("Unexpected decrypted message: expected %q, got %q", plaintext, decoded)
+	}
+
+	// test for invalid base64 string
+	_, err = decrypt(key, "invalidbase64")
+	if err == nil {
+		t.Errorf("Expected an error for invalid base64 string, but got none")
+	}
+
+	// test for incorrect key
+	key2, err := genKey()
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+
+	encoded, _, err = encrypt(plaintext)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+
+	_, err = decrypt(key2, encoded)
+	if err != nil {
+		t.Errorf("Expected an error for incorrect key, but got %v", err)
+	}
+}
