@@ -14,6 +14,13 @@ import (
 
 const charSet = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "!@#$%&*" + "0123456789"
 
+type Secret struct {
+	encryptedtext string
+	key           []byte
+	password      string
+	hash          string
+}
+
 func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
