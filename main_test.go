@@ -2,6 +2,8 @@ package main
 
 import (
 	"crypto/aes"
+	"crypto/cipher"
+	"encoding/base64"
 	"testing"
 
 	"golang.org/x/crypto/bcrypt"
@@ -133,6 +135,41 @@ func TestEncrypt(t *testing.T) {
 
 	if len([]byte(key)) < aes.BlockSize {
 		t.Fatal()
+	}
+}
+
+func TestEncrypt2(t *testing.T) {
+	encoded, key, err := encrypt(plaintext)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+
+	if len(key) != 32 {
+		t.Errorf("Unexpected key length: expected 32, got %v", len(key))
+	}
+
+	decoded, err := base64.RawStdEncoding.DecodeString(encoded)
+	if err != nil {
+		t.Errorf("Unexpected error decoding base64: %v", err)
+	}
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		t.Errorf("Unexpected error creating cipher block: %v", err)
+	}
+
+	if len(decoded) < aes.BlockSize {
+		t.Errorf("Unexpected decoded length: expected at least %v, got %v", aes.BlockSize, len(decoded))
+	}
+
+	iv := decoded[:aes.BlockSize]
+	decoded = decoded[aes.BlockSize:]
+
+	stream := cipher.NewCFBDecrypter(block, iv)
+	stream.XORKeyStream(decoded, decoded)
+
+	if string(decoded) != plaintext {
+		t.Errorf("Unexpected decrypted message: expected %q, got %q", plaintext, string(decoded))
 	}
 }
 
