@@ -110,6 +110,17 @@ func TestGenKey(t *testing.T) {
 	}
 }
 
+func TestGenKey2(t *testing.T) {
+	key, err := genKey()
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+
+	if len(key) != 32 {
+		t.Errorf("Unexpected key length: expected 32, got %v", len(key))
+	}
+}
+
 func TestEncrypt(t *testing.T) {
 	ct, key, err := encrypt(plaintext)
 	if err != nil {
