@@ -126,4 +126,10 @@ func encryptor(text string) (pass string, err error) {
 	return saver(s), nil
 }
 
+func decryptor(password string) (text string, err error) {
+	secret, err := getter(password)
+	text, err = decrypt(secret.key, secret.encryptedtext)
+	return
+}
+
 func main() {}
