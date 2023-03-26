@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"io"
+	mrand "math/rand"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -19,6 +20,14 @@ func hashPassword(password string) (string, error) {
 func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
+}
+
+func genPassword() (password string) {
+	length := mrand.Intn(17-7) + 7
+	for i := 0; i < length; i++ {
+		password += string([]rune(charSet)[mrand.Intn(len(charSet))])
+	}
+	return
 }
 
 func genKey() ([]byte, error) {
