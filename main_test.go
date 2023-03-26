@@ -51,9 +51,8 @@ func TestPasswordHash(t *testing.T) {
 	pass := "qewhy#fcu3!rt"
 
 	_, err := hashPassword(pass)
-
 	if err != nil {
-		t.Fatal()
+		t.Errorf("Unexpected error: %v", err)
 	}
 }
 
@@ -65,9 +64,7 @@ func TestHashPassword(t *testing.T) {
 		t.Errorf("Unexpected error: %v", err)
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
-
-	if err != nil {
+	if err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)); err != nil {
 		t.Errorf("Password does not match hash: %v", err)
 	}
 }
@@ -76,13 +73,12 @@ func TestCheckPasswordHash(t *testing.T) {
 	pass := "qewhy#fcu3!rt"
 
 	hash, err := hashPassword(pass)
-
 	if err != nil {
-		t.Fatal()
+		t.Fatalf("Unexpected error: %v", err)
 	}
 
 	if !checkPasswordHash(pass, hash) {
-		t.Fatal()
+		t.Error("Password does not match hash")
 	}
 }
 
@@ -94,9 +90,7 @@ func TestCheckHashPassword(t *testing.T) {
 		t.Errorf("Unexpected error: %v", err)
 	}
 
-	match := checkPasswordHash(password, string(hashedPassword))
-
-	if !match {
+	if !checkPasswordHash(password, string(hashedPassword)) {
 		t.Error("Password does not match hash")
 	}
 }
@@ -104,11 +98,11 @@ func TestCheckHashPassword(t *testing.T) {
 func TestGenKey(t *testing.T) {
 	key, err := genKey()
 	if err != nil {
-		t.Fatal(err)
+		t.Errorf("Unexpected error: %v", err)
 	}
 
 	if key[0] == 0 && key[1] == 0 && key[2] == 0 {
-		t.Fatal()
+		t.Fatal("Empty key")
 	}
 }
 
@@ -126,15 +120,15 @@ func TestGenKey2(t *testing.T) {
 func TestEncrypt(t *testing.T) {
 	ct, key, err := encrypt(plaintext)
 	if err != nil {
-		t.Fatal(err)
+		t.Errorf("Unexpected error: %v", err)
 	}
 
 	if len(ct) < 2 {
-		t.Fatal()
+		t.Fatal("Unexpected text length")
 	}
 
 	if len([]byte(key)) < aes.BlockSize {
-		t.Fatal()
+		t.Errorf("Unexpected key length: expected 32, got %v", len(key))
 	}
 }
 
@@ -176,16 +170,16 @@ func TestEncrypt2(t *testing.T) {
 func TestDecrypt(t *testing.T) {
 	ct, key, err := encrypt(plaintext)
 	if err != nil {
-		t.Fatal(err)
+		t.Errorf("Unexpected error: %v", err)
 	}
 
 	text, err := decrypt(key, ct)
 	if err != nil {
-		t.Fatal(err)
+		t.Errorf("Unexpected error: %v", err)
 	}
 
 	if text != plaintext {
-		t.Fatal()
+		t.Fatalf("Unexpected decrypted message: expected %q, got %q", plaintext, text)
 	}
 }
 
@@ -201,12 +195,11 @@ func TestDecrypt2(t *testing.T) {
 	}
 
 	if decoded != plaintext {
-		t.Errorf("Unexpected decrypted message: expected %q, got %q", plaintext, decoded)
+		t.Fatalf("Unexpected decrypted message: expected %q, got %q", plaintext, decoded)
 	}
 
 	// test for invalid base64 string
-	_, err = decrypt(key, "invalidbase64")
-	if err == nil {
+	if _, err = decrypt(key, "invalidbase64"); err == nil {
 		t.Errorf("Expected an error for invalid base64 string, but got none")
 	}
 
@@ -221,8 +214,7 @@ func TestDecrypt2(t *testing.T) {
 		t.Errorf("Unexpected error: %v", err)
 	}
 
-	_, err = decrypt(key2, encoded)
-	if err != nil {
+	if _, err = decrypt(key2, encoded); err != nil {
 		t.Errorf("Expected an error for incorrect key, but got %v", err)
 	}
 }
