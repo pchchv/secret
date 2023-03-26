@@ -24,8 +24,7 @@ func checkPasswordHash(password, hash string) bool {
 func genKey() ([]byte, error) {
 	key := make([]byte, 32)
 
-	_, err := rand.Read(key)
-	if err != nil {
+	if _, err := rand.Read(key); err != nil {
 		return nil, err
 	}
 
