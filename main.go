@@ -140,6 +140,13 @@ func decrypt(key []byte, secure string) (decoded string, err error) {
 	return string(cipherText), err
 }
 
+func reverse(s string) (result string) {
+	for _, v := range s {
+		result = string(v) + result
+	}
+	return
+}
+
 func encryptor(text string) (pass string, err error) {
 	s := Secret{}
 	s.encryptedtext, s.key, err = encrypt(text)
