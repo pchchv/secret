@@ -168,8 +168,18 @@ func encryptor(text string) (pass string, err error) {
 }
 
 func decryptor(password string) (text string, err error) {
-	secret, err := getter(password)
+	secret, err := finder(password)
+	if err != nil {
+		return
+	}
+
+	// TODO: Implement password verification for key and text
+
 	text, err = decrypt(secret.key.key, secret.encryptedtext.text)
+	if err != nil {
+		return
+	}
+
 	return
 }
 
