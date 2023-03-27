@@ -21,10 +21,9 @@ const charSet = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "!
 var collection *mongo.Collection
 
 type Secret struct {
-	encryptedtext string
-	key           []byte
-	password      string
-	hash          string
+	encryptetext EncryptedText
+	key          Key
+	password     string
 }
 
 type Key struct {
