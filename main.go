@@ -21,9 +21,9 @@ const charSet = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "!
 var collection *mongo.Collection
 
 type Secret struct {
-	encryptetext EncryptedText
-	key          Key
-	password     string
+	encryptedtext EncryptedText
+	key           Key
+	password      string
 }
 
 type Key struct {
@@ -149,13 +149,13 @@ func reverse(s string) (result string) {
 
 func encryptor(text string) (pass string, err error) {
 	s := Secret{}
-	s.encryptetext.text, s.key.key, err = encrypt(text)
+	s.encryptedtext.text, s.key.key, err = encrypt(text)
 	if err != nil {
 		return
 	}
 
 	s.password = genPassword()
-	s.encryptetext.hash, err = hashPassword(s.password)
+	s.encryptedtext.hash, err = hashPassword(s.password)
 	s.key.hash, err = hashPassword(reverse(s.password))
 	if err != nil {
 		return
@@ -166,7 +166,7 @@ func encryptor(text string) (pass string, err error) {
 
 func decryptor(password string) (text string, err error) {
 	secret, err := getter(password)
-	text, err = decrypt(secret.key.key, secret.encryptetext.text)
+	text, err = decrypt(secret.key.key, secret.encryptedtext.text)
 	return
 }
 
