@@ -187,5 +187,5 @@ func decryptor(password string) (text string, err error) {
 
 func main() {
 	database()
-	bot()
+	tgbot()
 }
