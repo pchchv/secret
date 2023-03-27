@@ -11,34 +11,32 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func inserter(s Secret) (password string) {
+func inserter(s Secret) (password string, err error) {
 	key := s.key
 	text := s.encryptedtext
 
 	k, err := bson.Marshal(key)
 	if err != nil {
-		golog.Panic(err.Error())
+		return
 	}
 
 	result, err := keys_collection.InsertOne(context.TODO(), k)
 	if err != nil {
-		golog.Panic(err.Error())
+		return
 	}
 	password = fmt.Sprint(result.InsertedID) + "{" + s.password + "}"
 
 	t, err := bson.Marshal(text)
 	if err != nil {
-		golog.Panic(err.Error())
+		return
 	}
 
 	result, err = secrets_collection.InsertOne(context.TODO(), t)
 	if err != nil {
-		golog.Panic(err.Error())
+		return
 	}
 
-	password += fmt.Sprint(result.InsertedID)
-
-	return
+	return password + fmt.Sprint(result.InsertedID), nil
 }
 
 func getter(pass string) (s Secret, err error) {
