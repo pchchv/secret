@@ -173,7 +173,11 @@ func decryptor(password string) (text string, err error) {
 		return
 	}
 
-	// TODO: Implement password verification for key and text
+	if !checkPasswordHash(reverse(password), secret.key.hash) {
+		return "", errors.New("invalid password")
+	}
+
+	// TODO: Implement password verification for text
 
 	text, err = decrypt(secret.key.key, secret.encryptedtext.text)
 	if err != nil {
