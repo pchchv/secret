@@ -3,6 +3,11 @@ module github.com/pchchv/secret
 go 1.20
 
 require (
+	go.mongodb.org/mongo-driver v1.11.3
+	golang.org/x/crypto v0.7.0
+)
+
+require (
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/joho/godotenv v1.5.1
 	github.com/klauspost/compress v1.13.6 // indirect

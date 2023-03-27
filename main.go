@@ -12,10 +12,13 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/pchchv/golog"
+	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
 
 const charSet = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "!@#$%&*" + "0123456789"
+
+var collection *mongo.Collection
 
 type Secret struct {
 	encryptedtext string
@@ -150,4 +153,6 @@ func decryptor(password string) (text string, err error) {
 	return
 }
 
-func main() {}
+func main() {
+	database()
+}
