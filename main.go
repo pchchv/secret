@@ -18,7 +18,10 @@ import (
 
 const charSet = "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "!@#$%&*" + "0123456789"
 
-var collection *mongo.Collection
+var (
+	keys_collection    *mongo.Collection
+	secrets_collection *mongo.Collection
+)
 
 type Secret struct {
 	encryptedtext EncryptedText

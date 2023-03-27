@@ -34,5 +34,6 @@ func database() {
 	}
 
 	golog.Info("Connected to MongoDB!")
-	collection = client.Database(getEnvValue("DATABASE")).Collection(getEnvValue("COLLECTION"))
+	keys_collection = client.Database(getEnvValue("DATABASE")).Collection("keys")
+	secrets_collection = client.Database(getEnvValue("DATABASE")).Collection("secrets")
 }
