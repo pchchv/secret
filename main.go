@@ -27,6 +27,16 @@ type Secret struct {
 	hash          string
 }
 
+type Key struct {
+	key  []byte
+	hash string
+}
+
+type EncryptedText struct {
+	text string
+	hash string
+}
+
 func init() {
 	// Load values from .env into the system
 	if err := godotenv.Load(); err != nil {
