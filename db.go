@@ -2,16 +2,43 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/pchchv/golog"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func saver(s Secret) string {
-	// TODO: Implement data transfer to the database
-	return s.password
+func inserter(s Secret) (password string) {
+	key := s.key
+	text := s.encryptedtext
+
+	k, err := bson.Marshal(key)
+	if err != nil {
+		golog.Panic(err.Error())
+	}
+
+	result, err := keys_collection.InsertOne(context.TODO(), k)
+	if err != nil {
+		golog.Panic(err.Error())
+	}
+	password = fmt.Sprint(result.InsertedID) + "{" + s.password + "}"
+
+	t, err := bson.Marshal(text)
+	if err != nil {
+		golog.Panic(err.Error())
+	}
+
+	result, err = secrets_collection.InsertOne(context.TODO(), t)
+	if err != nil {
+		golog.Panic(err.Error())
+	}
+
+	password += fmt.Sprint(result.InsertedID)
+
+	return
 }
 
 func getter(pass string) (s Secret, err error) {

@@ -164,7 +164,7 @@ func encryptor(text string) (pass string, err error) {
 		return
 	}
 
-	return saver(s), nil
+	return inserter(s), nil
 }
 
 func decryptor(password string) (text string, err error) {
