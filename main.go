@@ -149,13 +149,14 @@ func reverse(s string) (result string) {
 
 func encryptor(text string) (pass string, err error) {
 	s := Secret{}
-	s.encryptedtext, s.key, err = encrypt(text)
+	s.encryptetext.text, s.key.key, err = encrypt(text)
 	if err != nil {
 		return
 	}
 
 	s.password = genPassword()
-	s.hash, err = hashPassword(s.password)
+	s.encryptetext.hash, err = hashPassword(s.password)
+	s.key.hash, err = hashPassword(reverse(s.password))
 	if err != nil {
 		return
 	}
@@ -165,7 +166,7 @@ func encryptor(text string) (pass string, err error) {
 
 func decryptor(password string) (text string, err error) {
 	secret, err := getter(password)
-	text, err = decrypt(secret.key, secret.encryptedtext)
+	text, err = decrypt(secret.key.key, secret.encryptetext.text)
 	return
 }
 
