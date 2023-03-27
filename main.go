@@ -8,7 +8,10 @@ import (
 	"errors"
 	"io"
 	mrand "math/rand"
+	"os"
 
+	"github.com/joho/godotenv"
+	"github.com/pchchv/golog"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -19,6 +22,21 @@ type Secret struct {
 	key           []byte
 	password      string
 	hash          string
+}
+
+func init() {
+	// Load values from .env into the system
+	if err := godotenv.Load(); err != nil {
+		golog.Panic("No .env file found")
+	}
+}
+
+func getEnvValue(v string) string {
+	value, exist := os.LookupEnv(v)
+	if !exist {
+		golog.Panic("Value %v does not exist", v)
+	}
+	return value
 }
 
 func hashPassword(password string) (string, error) {
