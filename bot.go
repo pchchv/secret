@@ -2,6 +2,7 @@ package main
 
 import (
 	"reflect"
+	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/pchchv/golog"
@@ -45,9 +46,11 @@ func tgbot() {
 
 		// Check that a text message was received from the user
 		if reflect.TypeOf(update.Message.Text).Kind() == reflect.String && update.Message.Text != "" {
-			switch update.Message.Text {
-			default:
-				bot.Send("")
+			userMessage := update.Message.Text
+			if strings.Contains(userMessage, " ") {
+				// encrypt
+			} else {
+				// decrypt
 			}
 		}
 	}
