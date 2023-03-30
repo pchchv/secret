@@ -28,7 +28,7 @@ func tgbot() {
 		// Check that a command message was received from the user
 		if reflect.TypeOf(update.Message.Command()).Kind() == reflect.String && update.Message.Command() != "" {
 			switch update.Message.Command() {
-				// Sending a message
+			// Sending a message
 			case "start":
 				msg := tgbotapi.NewMessage(update.Message.Chat.ID, `Hi, I am a bot for creating one-time secret notes,
 				to create a note send me the command /send.
@@ -40,6 +40,14 @@ func tgbot() {
 			case "get":
 				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Send me a password.")
 				bot.Send(msg)
+			}
+		}
+
+		// Check that a text message was received from the user
+		if reflect.TypeOf(update.Message.Text).Kind() == reflect.String && update.Message.Text != "" {
+			switch update.Message.Text {
+			default:
+				bot.Send("")
 			}
 		}
 	}
