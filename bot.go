@@ -53,7 +53,7 @@ func tgbot() {
 					golog.Info(err.Error())
 					bot.Send("Something went wrong. Try again.")
 				}
-				bot.Send("Your password: " + pass)
+				bot.Send(fmt.Sprintf("Your password: '%v'", pass))
 			} else {
 				// decrypt
 			}
