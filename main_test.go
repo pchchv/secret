@@ -4,6 +4,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
+	"strings"
 	"testing"
 
 	"golang.org/x/crypto/bcrypt"
@@ -216,5 +217,20 @@ func TestDecrypt2(t *testing.T) {
 
 	if _, err = decrypt(key2, encoded); err != nil {
 		t.Errorf("Expected an error for incorrect key, but got %v", err)
+	}
+}
+
+func TestGenPassword(t *testing.T) {
+	// Test length of generated password is between 7 and 16 characters long
+	password := genPassword()
+	if len(password) < 7 || len(password) > 16 {
+		t.Errorf("Expected generated password to have length between 7 and 16, but got %d", len(password))
+	}
+
+	// Test that generated password contains only allowed characters
+	for _, c := range password {
+		if !strings.ContainsRune(charSet, c) {
+			t.Errorf("Generated password contains illegal character: %q", c)
+		}
 	}
 }
