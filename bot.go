@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -55,7 +56,12 @@ func tgbot() {
 				}
 				bot.Send(fmt.Sprintf("Your password: '%v'", pass))
 			} else {
-				// decrypt
+				text, err := decryptor(userMessage)
+				if err != nil {
+					golog.Info(err.Error())
+					bot.Send("Something went wrong. Try again.")
+				}
+				bot.Send(text)
 			}
 		}
 	}
