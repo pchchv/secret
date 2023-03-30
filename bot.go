@@ -33,6 +33,12 @@ func tgbot() {
 				// Sending a message
 				msg := tgbotapi.NewMessage(update.Message.Chat.ID, startmessage)
 				bot.Send(msg)
+			case "send":
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Send me your secret.")
+				bot.Send(msg)
+			case "get":
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Send me a password.")
+				bot.Send(msg)
 			}
 		}
 	}
