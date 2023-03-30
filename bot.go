@@ -7,8 +7,6 @@ import (
 	"github.com/pchchv/golog"
 )
 
-const startmessage = "Hi, I am a bot for creating one-time secret notes, to create a note send me the command /send. To retrieve a note, send /get."
-
 func tgbot() {
 	bot, err := tgbotapi.NewBotAPI(getEnvValue("TG_BOT_TOKEN"))
 	if err != nil {
@@ -26,12 +24,15 @@ func tgbot() {
 		if update.Message == nil {
 			continue
 		}
+
 		// Check that a command message was received from the user
 		if reflect.TypeOf(update.Message.Command()).Kind() == reflect.String && update.Message.Command() != "" {
 			switch update.Message.Command() {
-			case "start":
 				// Sending a message
-				msg := tgbotapi.NewMessage(update.Message.Chat.ID, startmessage)
+			case "start":
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, `Hi, I am a bot for creating one-time secret notes,
+				to create a note send me the command /send.
+				To retrieve a note, send /get.`)
 				bot.Send(msg)
 			case "send":
 				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Send me your secret.")
