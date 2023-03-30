@@ -234,3 +234,25 @@ func TestGenPassword(t *testing.T) {
 		}
 	}
 }
+
+func TestReverse(t *testing.T) {
+	testCases := []struct {
+		input    string
+		expected string
+	}{
+		{"", ""},
+		{"a", "a"},
+		{"abc", "cba"},
+		{"hello world", "dlrow olleh"},
+		{"12345", "54321"},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.input, func(t *testing.T) {
+			actual := reverse(tc.input)
+			if actual != tc.expected {
+				t.Errorf("Expected %q but got %q", tc.expected, actual)
+			}
+		})
+	}
+}
