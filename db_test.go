@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -84,5 +86,43 @@ func TestInserter(t *testing.T) {
 	}
 	if !checkPasswordHash(hash, retrievedText.hash) {
 		t.Errorf("unexpected text hash, expected %v, got %v", hash, retrievedText.hash)
+	}
+}
+
+func TestFinder(t *testing.T) {
+	// Set up a mock key and encrypted text in the collections
+	keyId := primitive.NewObjectID()
+	textId := primitive.NewObjectID()
+	key := Key{
+		key:  []byte("secretkey"),
+		hash: "hashofsecretkey",
+	}
+	encryptedText := EncryptedText{
+		text: "encryptedtext",
+		hash: "hashofencryptedtext",
+	}
+	k, _ := bson.Marshal(key)
+	tex, _ := bson.Marshal(encryptedText)
+	keys_collection.InsertOne(context.Background(), k)
+	secrets_collection.InsertOne(context.Background(), tex)
+
+	// Test case: valid password
+	pass := fmt.Sprint(keyId) + "{password}" + fmt.Sprint(textId)
+	s, err := finder(pass)
+	if err != nil {
+		t.Errorf("finder() error = %v, wantErr nil", err)
+	}
+	if !reflect.DeepEqual(s.key, key) {
+		t.Errorf("finder() s.key = %v, want %v", s.key, key)
+	}
+	if !reflect.DeepEqual(s.encryptedtext, encryptedText) {
+		t.Errorf("finder() s.encryptedtext = %v, want %v", s.encryptedtext, encryptedText)
+	}
+
+	// Test case: invalid password
+	pass = "invalidpassword"
+	_, err = finder(pass)
+	if err == nil {
+		t.Errorf("finder() error = nil, wantErr")
 	}
 }
