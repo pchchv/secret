@@ -48,7 +48,12 @@ func tgbot() {
 		if reflect.TypeOf(update.Message.Text).Kind() == reflect.String && update.Message.Text != "" {
 			userMessage := update.Message.Text
 			if strings.Contains(userMessage, " ") {
-				// encrypt
+				pass, err := encryptor(userMessage)
+				if err != nil {
+					golog.Info(err.Error())
+					bot.Send("Something went wrong. Try again.")
+				}
+				bot.Send("Your password: " + pass)
 			} else {
 				// decrypt
 			}
