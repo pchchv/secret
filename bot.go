@@ -26,11 +26,11 @@ func tgbot() {
 		if update.Message == nil {
 			continue
 		}
-		// Check that a text message was received from the user
-		if reflect.TypeOf(update.Message.Text).Kind() == reflect.String && update.Message.Text != "" {
-			switch update.Message.Text {
-			case "/start":
-				//Отправлем сообщение
+		// Check that a command message was received from the user
+		if reflect.TypeOf(update.Message.Command()).Kind() == reflect.String && update.Message.Command() != "" {
+			switch update.Message.Command() {
+			case "start":
+				// Sending a message
 				msg := tgbotapi.NewMessage(update.Message.Chat.ID, startmessage)
 				bot.Send(msg)
 			}
