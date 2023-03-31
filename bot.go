@@ -29,39 +29,38 @@ func tgbot() {
 
 		// Check that a text message was received from the user
 		if reflect.TypeOf(update.Message.Text).Kind() == reflect.String && update.Message.Text != "" {
+			var msg tgbotapi.MessageConfig
 			userMessage := update.Message.Text
+
 			switch userMessage {
 			case "/start":
 				msg = tgbotapi.NewMessage(update.Message.Chat.ID,
 					"Hi, I am a bot for creating one-time secret notes.\nTo create a note send me the command /send.\nTo retrieve a note, send /get.")
 				bot.Send(msg)
 			case "/send":
-				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Send me your secret.")
-				bot.Send(msg)
+				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Send me your secret.")
 			case "/get":
-				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Send me a password.")
-				bot.Send(msg)
+				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Send me a password.")
 			default:
 				if strings.Contains(userMessage, " ") {
 					pass, err := encryptor(userMessage)
 					if err != nil {
+						msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Something went wrong. Try again.")
 						golog.Info(err.Error())
-						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Something went wrong. Try again.")
-						bot.Send(msg)
+					} else {
+						msg = tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Your password: '%v'", pass))
 					}
-					msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Your password: '%v'", pass))
-					bot.Send(msg)
 				} else {
 					text, err := decryptor(userMessage)
 					if err != nil {
+						msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Something went wrong. Try again.")
 						golog.Info(err.Error())
-						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Something went wrong. Try again.")
-						bot.Send(msg)
+					} else {
+						msg = tgbotapi.NewMessage(update.Message.Chat.ID, text)
 					}
-					msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
-					bot.Send(msg)
 				}
 			}
+			bot.Send(msg)
 		}
 	}
 }
