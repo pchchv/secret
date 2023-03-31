@@ -8,58 +8,66 @@ import (
 
 	"github.com/pchchv/golog"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func inserter(s Secret) (password string, err error) {
-	key := s.key
-	text := s.encryptedtext
-
-	k, err := bson.Marshal(key)
+	keyBson, err := bson.Marshal(s.key)
 	if err != nil {
-		return
+		return "", err
 	}
 
-	result, err := keys_collection.InsertOne(context.TODO(), k)
+	res, err := keys_collection.InsertOne(context.Background(), keyBson)
 	if err != nil {
-		return
-	}
-	password = fmt.Sprint(result.InsertedID) + "{" + s.password + "}"
-
-	t, err := bson.Marshal(text)
-	if err != nil {
-		return
+		return "", err
 	}
 
-	result, err = secrets_collection.InsertOne(context.TODO(), t)
+	password = fmt.Sprintf("%v{%v}", res.InsertedID, s.password)
+
+	textBson, err := bson.Marshal(s.encryptedtext)
 	if err != nil {
-		return
+		return "", err
 	}
 
-	return password + fmt.Sprint(result.InsertedID), nil
+	res, err = secrets_collection.InsertOne(context.Background(), textBson)
+	if err != nil {
+		return "", err
+	}
+
+	password += fmt.Sprintf("%v", res.InsertedID)
+
+	return password, nil
 }
 
 func finder(pass string) (s Secret, err error) {
-	p := strings.Split(pass, "{")
-	keyId := p[0]
-	p = strings.Split(p[1], "}")
-	s.password = p[0]
-	textId := p[1]
+	splitPass := strings.Split(pass, "{")
+	keyID := splitPass[0]
+	password := strings.TrimSuffix(splitPass[1], "}")
 
-	res := keys_collection.FindOneAndDelete(context.TODO(), bson.M{"_id": keyId})
-	err = res.Decode(s.key)
+	objectID, err := primitive.ObjectIDFromHex(keyID)
 	if err != nil {
-		return
+		return s, err
 	}
 
-	res = secrets_collection.FindOneAndDelete(context.TODO(), bson.M{"_id": textId})
-	err = res.Decode(s.encryptedtext)
-	if err != nil {
-		return
+	res := keys_collection.FindOneAndDelete(context.Background(), bson.M{"_id": objectID})
+	if err = res.Decode(&s.key); err != nil {
+		return s, err
 	}
 
-	return
+	objectID, err = primitive.ObjectIDFromHex(password)
+	if err != nil {
+		return s, err
+	}
+
+	res = secrets_collection.FindOneAndDelete(context.Background(), bson.M{"_id": objectID})
+	if err = res.Decode(&s.encryptedtext); err != nil {
+		return s, err
+	}
+
+	s.password = password
+	return s, nil
 }
 
 func database() {
@@ -72,6 +80,11 @@ func database() {
 	defer cancel()
 
 	client, err := mongo.Connect(ctx, clientOptions)
+	if err != nil {
+		golog.Fatal(err.Error())
+	}
+
+	err = client.Ping(ctx, nil)
 	if err != nil {
 		golog.Fatal(err.Error())
 	}
