@@ -52,14 +52,16 @@ func tgbot() {
 				pass, err := encryptor(userMessage)
 				if err != nil {
 					golog.Info(err.Error())
-					bot.Send("Something went wrong. Try again.")
+					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Something went wrong. Try again.")
+					bot.Send(msg)
 				}
 				bot.Send(fmt.Sprintf("Your password: '%v'", pass))
 			} else {
 				text, err := decryptor(userMessage)
 				if err != nil {
 					golog.Info(err.Error())
-					bot.Send("Something went wrong. Try again.")
+					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Something went wrong. Try again.")
+					bot.Send(msg)
 				}
 				bot.Send(text)
 			}
