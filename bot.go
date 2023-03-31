@@ -32,9 +32,8 @@ func tgbot() {
 			userMessage := update.Message.Text
 			switch userMessage {
 			case "/start":
-				msg := tgbotapi.NewMessage(update.Message.Chat.ID, `Hi, I am a bot for creating one-time secret notes,
-				to create a note send me the command /send.
-				To retrieve a note, send /get.`)
+				msg = tgbotapi.NewMessage(update.Message.Chat.ID,
+					"Hi, I am a bot for creating one-time secret notes.\nTo create a note send me the command /send.\nTo retrieve a note, send /get.")
 				bot.Send(msg)
 			case "/send":
 				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Send me your secret.")
